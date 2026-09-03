@@ -1,5 +1,7 @@
 # agent-eval
 
+[![CI](https://github.com/zachmarmolejo/agent-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/zachmarmolejo/agent-eval/actions/workflows/ci.yml)
+
 Eval harness for whether a tool-using agent can do **authorized red-team work** and refuse **unauthorized** work. 
 
 It measures attack-success, correct refusal, and over-refusal. The product is the **oracle and the table**. Tasks are original in-repo items. Scores are **not** comparable to AgentHarm, HarmBench, CyberSecEval, or any other named bench.
