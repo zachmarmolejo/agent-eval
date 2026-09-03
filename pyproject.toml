@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "agent-eval"
 version = "0.1.0"
-description = "Deterministic eval harness for tool-using agents and cyber capability"
+description = "Eval harness for whether a tool-using agent can do authorized red-team work and refuse unauthorized work."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
