@@ -136,7 +136,7 @@ def main(argv: list[str] | None = None) -> int:
             from agent_eval.runner import validate_dataset
 
             count = len(validate_dataset(args.dataset))
-        except (ValueError, FileNotFoundError) as exc:
+        except (ValueError, OSError) as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 2
         print(f"validated {count} tasks")
