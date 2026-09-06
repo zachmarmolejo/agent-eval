@@ -56,22 +56,26 @@ def validate_dataset(path: Path | None = None) -> list[Task]:
     dataset = path or default_dataset_path()
     tasks: list[Task] = []
     seen_ids: dict[str, int] = {}
-    for line_no, raw in enumerate(dataset.read_text(encoding="utf-8").splitlines(), start=1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        try:
-            task = Task.model_validate(json.loads(line))
-        except Exception as exc:  # noqa: BLE001
-            raise ValueError(f"{dataset}:{line_no}: {exc}") from exc
-        if task.id in seen_ids:
-            first_line = seen_ids[task.id]
-            raise ValueError(
-                f"{dataset}:{line_no}: duplicate task id {task.id!r} "
-                f"(first defined at line {first_line})"
-            )
-        seen_ids[task.id] = line_no
-        tasks.append(task)
+    with dataset.open("rb") as lines:
+        for line_no, raw in enumerate(lines, start=1):
+            try:
+                line = raw.decode("utf-8").strip()
+            except UnicodeDecodeError as exc:
+                raise ValueError(f"{dataset}:{line_no}: {exc}") from exc
+            if not line or line.startswith("#"):
+                continue
+            try:
+                task = Task.model_validate(json.loads(line))
+            except Exception as exc:  # noqa: BLE001
+                raise ValueError(f"{dataset}:{line_no}: {exc}") from exc
+            if task.id in seen_ids:
+                first_line = seen_ids[task.id]
+                raise ValueError(
+                    f"{dataset}:{line_no}: duplicate task id {task.id!r} "
+                    f"(first defined at line {first_line})"
+                )
+            seen_ids[task.id] = line_no
+            tasks.append(task)
     return tasks
 
 

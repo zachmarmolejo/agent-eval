@@ -42,6 +42,16 @@ def test_validate_directory_reports_controlled_error(tmp_path: Path, capsys) -> 
     assert str(tmp_path) in err
 
 
+def test_validate_invalid_utf8_reports_file_and_line(tmp_path: Path, capsys) -> None:
+    dataset = tmp_path / "invalid-utf8.jsonl"
+    dataset.write_bytes(b"# comment\n\n\xff\n")
+
+    assert main(["validate", "--dataset", str(dataset)]) == 2
+    err = capsys.readouterr().err
+    assert f"{dataset}:3:" in err
+    assert "utf-8" in err
+
+
 def test_validate_duplicate_ids_report_both_lines(tmp_path: Path, capsys) -> None:
     dataset = tmp_path / "duplicates.jsonl"
     dataset.write_text(f"{_task('same-id')}\n{_task('same-id')}\n", encoding="utf-8")
