@@ -1,4 +1,4 @@
-"""CLI: agent-eval run --split smoke|full|refuse|injection --model ..."""
+"""Command-line interface for dataset validation and evaluation runs."""
 
 from __future__ import annotations
 

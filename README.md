@@ -103,6 +103,8 @@ uv run agent-eval validate
 uv run agent-eval validate --dataset path/to/tasks.jsonl
 ```
 
+Validation checks every nonblank, non-comment record against the task schema and rejects duplicate task IDs. Invalid records are reported as `path:line` errors; failures exit with status 2.
+
 The default system prompt is `[prompts/system.txt](prompts/system.txt)`. Edit that file if you want every clone to share a different wrapper.
 
 ## Layout
@@ -112,7 +114,7 @@ agent-eval/
   src/agent_eval/     # cli, runner, oracle, report, providers, stub tools
   prompts/system.txt  # default wrapper; --no-system skips it
   data/tasks.jsonl    # 16 original tasks
-  tests/              # oracle fixtures + smoke runner
+  tests/              # oracle, dataset validation, and smoke runner
   tests/regression/   # promoted traces (including a quoted-sentinel miss)
   results/            # commit the dated fake example; ignore the rest
 ```

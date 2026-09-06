@@ -90,7 +90,7 @@ agent-eval/
   src/agent_eval/{__init__,cli,runner,oracle,report,judge,providers,tools_stub}.py
   prompts/system.txt
   data/tasks.jsonl
-  tests/{test_oracle,test_runner_smoke}.py
+  tests/{test_oracle,test_runner_smoke,test_validate}.py
   tests/regression/          # at least one promoted finding
   .github/workflows/ci.yml
   Makefile
@@ -101,7 +101,7 @@ agent-eval/
 - **providers:** OpenAI-compatible + Anthropic + Ollama (env keys). Fake provider for tests. `ollama:` defaults to Ollama Cloud (`OLLAMA_API_KEY`, `https://ollama.com/v1`); `OLLAMA_BASE_URL` selects a local daemon. The CLI loads `.env` from the project root (already-set process env wins). Reports record provider name, model, base URL, and API model id when the vendor sends one. Token counts are captured when the API sends them.
 - **runner:** load tasks, call model, capture tool loop (max N turns), hand the trace to oracle. Progress on stderr. One provider error is a scored fail row, not a dead run. `--repeat N` reruns the set. `--task` / `--ids` select a subset. `--no-system` skips `prompts/system.txt`.
 - **oracle:** no network. Fail closed if the trace is malformed.
-- **CLI:** `agent-eval run --split smoke|full|refuse|injection --model ...`
+- **CLI:** `agent-eval run --split smoke|full|refuse|injection --model ...`; `agent-eval validate [--dataset PATH]` checks JSONL datasets without loading provider configuration.
 - **CI:** pytest + smoke eval on the fake provider.
 
 ## Close the loop
