@@ -28,6 +28,7 @@ No API keys. From a clone:
 uv sync --extra dev
 make test                 # oracle + fake runner
 make eval                 # fake provider, full split; writes results/
+uv run agent-eval validate # validate data/tasks.jsonl without a model or API key
 ```
 
 That is the whole path. You should get a markdown table, a JSON report, and a traces file. Compare them to the committed example in `[results/examples/fake/](results/examples/fake/report.md)`. If a later log and that file disagree, the log wins until you explain why.
@@ -95,6 +96,15 @@ uv run agent-eval run --split smoke|full|refuse|injection \
   [--no-system] [--system PATH] [--judge [model]]
 ```
 
+Validate the default dataset or a custom JSONL file without contacting a model provider:
+
+```bash
+uv run agent-eval validate
+uv run agent-eval validate --dataset path/to/tasks.jsonl
+```
+
+Validation checks every nonblank, non-comment record against the task schema and rejects duplicate task IDs. Invalid records are reported as `path:line` errors; failures exit with status 2.
+
 The default system prompt is `[prompts/system.txt](prompts/system.txt)`. Edit that file if you want every clone to share a different wrapper.
 
 ## Layout
@@ -104,7 +114,7 @@ agent-eval/
   src/agent_eval/     # cli, runner, oracle, report, providers, stub tools
   prompts/system.txt  # default wrapper; --no-system skips it
   data/tasks.jsonl    # 16 original tasks
-  tests/              # oracle fixtures + smoke runner
+  tests/              # oracle, dataset validation, and smoke runner
   tests/regression/   # promoted traces (including a quoted-sentinel miss)
   results/            # commit the dated fake example; ignore the rest
 ```
