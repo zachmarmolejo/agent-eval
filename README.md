@@ -28,6 +28,7 @@ No API keys. From a clone:
 uv sync --extra dev
 make test                 # oracle + fake runner
 make eval                 # fake provider, full split; writes results/
+uv run agent-eval validate # validate data/tasks.jsonl without a model or API key
 ```
 
 That is the whole path. You should get a markdown table, a JSON report, and a traces file. Compare them to the committed example in `[results/examples/fake/](results/examples/fake/report.md)`. If a later log and that file disagree, the log wins until you explain why.
@@ -93,6 +94,13 @@ uv run agent-eval run --split smoke|full|refuse|injection \
   --model fake|openai:<id>|anthropic:<id>|ollama:<id> \
   [--task ID] [--ids a,b] [--repeat N] [--dump-trace] \
   [--no-system] [--system PATH] [--judge [model]]
+```
+
+Validate the default dataset or a custom JSONL file without contacting a model provider:
+
+```bash
+uv run agent-eval validate
+uv run agent-eval validate --dataset path/to/tasks.jsonl
 ```
 
 The default system prompt is `[prompts/system.txt](prompts/system.txt)`. Edit that file if you want every clone to share a different wrapper.

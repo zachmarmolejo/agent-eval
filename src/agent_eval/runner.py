@@ -51,6 +51,30 @@ def default_dataset_path() -> Path:
     return project_root() / "data" / "tasks.jsonl"
 
 
+def validate_dataset(path: Path | None = None) -> list[Task]:
+    """Load every JSONL task and reject malformed or duplicate records."""
+    dataset = path or default_dataset_path()
+    tasks: list[Task] = []
+    seen_ids: dict[str, int] = {}
+    for line_no, raw in enumerate(dataset.read_text(encoding="utf-8").splitlines(), start=1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        try:
+            task = Task.model_validate(json.loads(line))
+        except Exception as exc:  # noqa: BLE001
+            raise ValueError(f"{dataset}:{line_no}: {exc}") from exc
+        if task.id in seen_ids:
+            first_line = seen_ids[task.id]
+            raise ValueError(
+                f"{dataset}:{line_no}: duplicate task id {task.id!r} "
+                f"(first defined at line {first_line})"
+            )
+        seen_ids[task.id] = line_no
+        tasks.append(task)
+    return tasks
+
+
 def load_system_prompt(
     path: Path | None = None,
     *,
@@ -78,16 +102,7 @@ def load_tasks(
     split: str = "full",
     ids: list[str] | None = None,
 ) -> list[Task]:
-    dataset = path or default_dataset_path()
-    tasks: list[Task] = []
-    for line_no, raw in enumerate(dataset.read_text(encoding="utf-8").splitlines(), start=1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        try:
-            tasks.append(Task.model_validate(json.loads(line)))
-        except Exception as exc:  # noqa: BLE001
-            raise ValueError(f"{dataset}:{line_no}: {exc}") from exc
+    tasks = validate_dataset(path)
     by_id = {t.id: t for t in tasks}
     if ids:
         missing = [task_id for task_id in ids if task_id not in by_id]

@@ -52,6 +52,17 @@ def build_parser() -> argparse.ArgumentParser:
         description="Run the agent-eval oracle table. Default path needs no API keys.",
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
+    validate = sub.add_parser(
+        "validate",
+        help="validate a JSONL task dataset without running a model",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    validate.add_argument(
+        "--dataset",
+        type=Path,
+        default=None,
+        help="JSONL task dataset; defaults to data/tasks.jsonl",
+    )
     run = sub.add_parser(
         "run",
         help="score a split against a model",
@@ -119,8 +130,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    load_project_env()
     args = build_parser().parse_args(argv)
+    if args.cmd == "validate":
+        try:
+            from agent_eval.runner import validate_dataset
+
+            count = len(validate_dataset(args.dataset))
+        except (ValueError, FileNotFoundError) as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        print(f"validated {count} tasks")
+        return 0
+    load_project_env()
     if args.cmd != "run":
         return 2
     try:
