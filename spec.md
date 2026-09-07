@@ -1,6 +1,6 @@
 # Spec: agent-eval
 
-Public evaluation harness for tool-using agents and model cyber *capability* (not implants). This is the resume-proof project. A stranger clones it, runs one command, and gets a table they can argue with.
+Public evaluation harness for tool-using agents and model cyber *capability* (not implants). A stranger clones it, runs one command, and gets a table they can argue with.
 
 ## Goal
 
